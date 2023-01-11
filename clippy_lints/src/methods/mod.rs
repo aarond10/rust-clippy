@@ -911,12 +911,12 @@ declare_clippy_lint! {
     /// # let foo = Some(String::new());
     /// # let err_code = "418";
     /// # let err_msg = "I'm a teapot";
-    /// foo.expect(&format!("Err {}: {}", err_code, err_msg));
+    /// foo.expect(&format!("Err {}: {:?}", err_code, err_msg));
     ///
     /// // or
     ///
     /// # let foo = Some(String::new());
-    /// foo.expect(format!("Err {}: {}", err_code, err_msg).as_str());
+    /// foo.expect(format!("Err {}: {:?}", err_code, err_msg).as_str());
     /// ```
     ///
     /// Use instead:
@@ -924,7 +924,25 @@ declare_clippy_lint! {
     /// # let foo = Some(String::new());
     /// # let err_code = "418";
     /// # let err_msg = "I'm a teapot";
-    /// foo.unwrap_or_else(|| panic!("Err {}: {}", err_code, err_msg));
+    /// foo.unwrap_or_else(|| panic!("Err {}: {:?}", err_code, err_msg));
+    /// ```
+    ///
+    /// ### Example
+    /// ```rust
+    /// let val = 123;
+    /// fn f(u32) -> u32 { val + 1 }
+    /// let foo : std::io::Result<u32> = Ok(f(val));
+    /// foo.expect(&format!("Err with {}", val));
+    /// ```
+    ///
+    /// Use instead:
+    ///
+    /// ```rust
+    /// # let val = 123;
+    /// # fn f(u32) -> u32 { val + 1 }
+    /// # let foo : std::io::Result<u32> = Ok(f(val));
+    /// # foo.expect(&format!("Err with {}", val));
+    /// foo.unwrap_or_else(|err| panic!("Err with {}: {:?}", val, err)); 
     /// ```
     #[clippy::version = "pre 1.29.0"]
     pub EXPECT_FUN_CALL,
